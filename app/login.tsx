@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
-import { Camera } from "expo-camera";
+import { Avatar, CheckBox, Icon, Input } from "@rneui/themed";
 import { Formik, FormikHelpers, FormikValues } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   ImageBackground,
@@ -11,12 +11,10 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-
+import * as Yup from "yup";
 const Login = ({ navigation }: any) => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  console.log(permission)
-  const [isRequesting, setIsRequesting] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
+  const [isRequesting, setIsRequesting] = useState(false);
 
   const loginHandler = async (values: any, navigate: any) => {
     setIsRequesting(true);
@@ -42,7 +40,7 @@ const Login = ({ navigation }: any) => {
 
     let data = await response.json();
     console.log(data);
-    if(response){
+    if (response) {
       setIsRequesting(false);
     }
     if (data.code == 200 && data.token) {
@@ -79,11 +77,24 @@ const Login = ({ navigation }: any) => {
             email: "",
             password: "",
           }}
+          validationSchema={Yup.object().shape({
+            email: Yup.string()
+              .email("Email must be a valid.")
+              .required("Email is required"),
+            password: Yup.string().required("Password is required"),
+          })}
           onSubmit={(values: any) => {
             loginHandler(values, navigation);
           }}
         >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
             <View
               style={{
                 flex: 1,
@@ -91,7 +102,7 @@ const Login = ({ navigation }: any) => {
                 alignItems: "center",
                 justifyContent: "center",
                 width: "80%",
-                height: "100%",
+                height: "80%",
               }}
             >
               <Avatar
@@ -105,26 +116,40 @@ const Login = ({ navigation }: any) => {
                   width: "60%",
                   color: "black",
                 }}
-                labelStyle={{ color: "black" }}
+                labelStyle={{ color: "black", fontSize: 20 }}
                 disabledInputStyle={{ backgroundColor: "#ddd" }}
                 leftIcon={<Icon name="email" size={20} />}
                 placeholder="Email"
-                label="Email"
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
                 value={values.email}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 textContentType="emailAddress"
+                placeholderTextColor={"black"}
+                renderErrorMessage={
+                  errors.email && touched.email ? true : false
+                }
+                errorMessage={`${
+                  errors.email && touched.email ? errors.email : ""
+                }`}
+                errorStyle={{color:"red",fontSize:15}}
               />
               <Input
                 leftIcon={<Icon name={"password"}></Icon>}
                 placeholder="Password"
                 secureTextEntry={showPassword}
-                label="Password"
+                placeholderTextColor={"black"}
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
                 value={values.password}
+                renderErrorMessage={
+                  errors.password && touched.password ? true : false
+                }
+                errorMessage={`${
+                  errors.password && touched.password ? errors.password : ""
+                }`}
+                errorStyle={{color:"red",fontSize:15}}
               />
               <CheckBox
                 checked={!showPassword}
@@ -137,7 +162,7 @@ const Login = ({ navigation }: any) => {
                 onPress={(values: any) => {
                   handleSubmit(values);
                 }}
-                title="Submit"
+                title="Login"
                 disabled={isRequesting}
               />
             </View>
