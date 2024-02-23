@@ -1,3 +1,4 @@
+import { useAppState } from "@react-native-community/hooks";
 import { Button } from "@rneui/base";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,9 +16,10 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from "react-native-vision-camera";
+import { useIsFocused } from '@react-navigation/native';
 
 export default function SuperAdminDashboard({ navigation }: any) {
-  const [showCamera, setShowCamera] = useState(false);
+  const [showCamera, setShowCamera] = useState(true);
   const [hasPermission, setCameraPermission] =
     useState<CameraPermissionStatus>("not-determined");
   const device = useCameraDevice("back");
@@ -27,6 +29,9 @@ export default function SuperAdminDashboard({ navigation }: any) {
       console.log("Scanned code: ", codes);
     },
   });
+  const isFocused = useIsFocused()
+  const appState = useAppState()
+  const isActive = isFocused && appState === "active"
   return (
     <ImageBackground
       source={require("../../assets/images/car-bg.png")}
@@ -39,32 +44,19 @@ export default function SuperAdminDashboard({ navigation }: any) {
           height: "100%",
         }}
       >
-        {!showCamera ? (
-          <Text
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: 0,
-              right: 0,
-              textAlign: "center",
-              fontSize: 20,
-              color: "white",
-              fontWeight: "bold",
-            }}
-          >
-            Click the QR Code Button to start Scanning
-          </Text>
-        ) : hasPermission && device ? (
-          <Camera
-            style={{ width: "100%", height: "100%" }}
-            device={device}
-            isActive={showCamera}
-            codeScanner={codeScanner}
-          />
+        {hasPermission && device ? (
+          <>
+            <Camera
+              style={{ width: "100%", height: "100%" }}
+              device={device}
+              isActive={showCamera}
+              codeScanner={codeScanner}
+            />
+          </>
         ) : (
           <Text>Camera not available</Text>
         )}
-        {!showCamera ? (
+        {showCamera ? (
           <Button
             buttonStyle={{
               width: 98,
@@ -114,7 +106,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
                   });
                 }
                 setCameraPermission(permission);
-                setShowCamera(!showCamera);
+                setShowCamera(true);
               };
               requestPermissions();
             }}
@@ -155,10 +147,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
             loadingProps={{ animating: true }}
             loadingStyle={{}}
             onPress={() => {
-              Camera.addCameraDevicesChangedListener((devices) => {
-                console.log("Devices changed: ", devices);
-              });
-              setShowCamera(!showCamera);
+              setShowCamera(false);
             }}
           />
         )}
