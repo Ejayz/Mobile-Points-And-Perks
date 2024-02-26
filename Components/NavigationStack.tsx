@@ -8,6 +8,8 @@ import SuperAdminDrawer from "./SuperAdminDrawer";
 import { StyleSheet } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { Header } from "@rneui/base";
+import AdminDashboard from "../app/(admin)/AdminDashboard";
+import AdminCustomerAccount from "../app/(admin)/AdminCustomerAccount";
 const Navigation = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -20,11 +22,39 @@ const MainStack = () => {
           headerShown: false, // Hide the header for the login screen
         }}
       />
+      
       <Navigation.Screen
-        name="SuperAdminDrawer"
-        component={SuperAdminDrawer}
+        name="AdminDashboard"
+        component={AdminDashboard}
         options={{
-          title: "SuperAdminDrawer",
+          title: "AdminDashboard",
+          headerShown: true,
+          header(props) {
+            return (
+              <Header
+                backgroundImageStyle={{}}
+                barStyle="default"
+                centerComponent={{
+                  text: "Points And Perks",
+                  style: { color: "#fff",fontSize: 20},
+                }}
+                centerContainerStyle={{}}
+                containerStyle={{ width: "100%" }}
+                leftContainerStyle={{}}
+                linearGradientProps={{}}
+                placement="center"
+                rightContainerStyle={{}}
+                statusBarProps={{}}
+              />
+            );
+          },
+        }}
+      />
+       <Navigation.Screen
+        name="AdminCustomerAccount"
+        component={AdminCustomerAccount}
+        options={{
+          title: "AdminCustomerAccount",
           headerShown: true,
           header(props) {
             return (

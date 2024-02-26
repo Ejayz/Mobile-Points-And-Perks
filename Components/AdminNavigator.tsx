@@ -7,44 +7,25 @@ import { StyleSheet } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { Header } from "@rneui/base";
 import AdminNavigator from "./AdminNavigator";
-
+import AdminDashboard from "../app/(admin)/AdminDashboard";
 
 const Navigation = createNativeStackNavigator();
 const MainStack = () => {
   return (
     <Navigation.Navigator>
       <Navigation.Screen
+        name="AdminDashboard"
+        component={AdminDashboard}
+        options={{
+          title: "AdminDashboard",
+          headerShown: false,
+        }}
+      />
+      <Navigation.Screen
         name="Login"
         component={Login}
         options={{
           headerShown: false, // Hide the header for the login screen
-        }}
-      />
-      <Navigation.Screen
-        name="SuperAdminDrawer"
-        component={AdminNavigator}
-        options={{
-          title: "SuperAdminDrawer",
-          headerShown: true,
-          header(props) {
-            return (
-              <Header
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={{
-                  text: "Points And Perks",
-                  style: { color: "#fff",fontSize: 20},
-                }}
-                centerContainerStyle={{}}
-                containerStyle={{ width: "100%" }}
-                leftContainerStyle={{}}
-                linearGradientProps={{}}
-                placement="center"
-                rightContainerStyle={{}}
-                statusBarProps={{}}
-              />
-            );
-          },
         }}
       />
     </Navigation.Navigator>

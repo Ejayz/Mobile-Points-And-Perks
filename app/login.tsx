@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
 import { Avatar, CheckBox, Icon, Input } from "@rneui/themed";
-import { Formik, FormikHelpers, FormikValues } from "formik";
-import React, { useState } from "react";
+import { Formik, FormikHelpers, FormikValues, FormikProps } from "formik";
+import React, { useRef, useState } from "react";
 import {
   Button,
   ImageBackground,
@@ -15,7 +15,7 @@ import * as Yup from "yup";
 const Login = ({ navigation }: any) => {
   const [showPassword, setShowPassword] = useState(true);
   const [isRequesting, setIsRequesting] = useState(false);
-
+  const forms = useRef<FormikProps<any>>(null);
   const loginHandler = async (values: any, navigate: any) => {
     setIsRequesting(true);
     let headersList = {
@@ -53,7 +53,8 @@ const Login = ({ navigation }: any) => {
           text2: "You do not have the privilege to access this page.",
         });
       } else if (token.role == 2) {
-        navigation.navigate("SuperAdminDrawer");
+        navigation.navigate("AdminDashboard");
+        forms.current?.resetForm();
       } else if (token.role == 3) {
         Toast.show({
           type: "error",
@@ -62,7 +63,8 @@ const Login = ({ navigation }: any) => {
           text2: "You do not have the privilege to access this page.",
         });
       } else if (token.role == 4) {
-        navigation.navigate("SuperAdminDrawer");
+        navigation.navigate("AdminDashboard");
+        forms.current?.resetForm();
       }
     }
   };
@@ -77,6 +79,7 @@ const Login = ({ navigation }: any) => {
             email: "",
             password: "",
           }}
+          innerRef={forms}
           validationSchema={Yup.object().shape({
             email: Yup.string()
               .email("Email must be a valid.")
@@ -133,7 +136,7 @@ const Login = ({ navigation }: any) => {
                 errorMessage={`${
                   errors.email && touched.email ? errors.email : ""
                 }`}
-                errorStyle={{color:"red",fontSize:15}}
+                errorStyle={{ color: "red", fontSize: 15 }}
               />
               <Input
                 leftIcon={<Icon name={"password"}></Icon>}
@@ -149,7 +152,7 @@ const Login = ({ navigation }: any) => {
                 errorMessage={`${
                   errors.password && touched.password ? errors.password : ""
                 }`}
-                errorStyle={{color:"red",fontSize:15}}
+                errorStyle={{ color: "red", fontSize: 15 }}
               />
               <CheckBox
                 checked={!showPassword}
