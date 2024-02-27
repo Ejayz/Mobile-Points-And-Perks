@@ -1,0 +1,10 @@
+# Exclude node_modules directory
+node_modules/
+
+# Exclude build output directories
+android/build/
+ios/build/
+
+# Exclude debug files
+*.log
+*.log.*

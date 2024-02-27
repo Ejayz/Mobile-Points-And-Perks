@@ -23,11 +23,22 @@ export default function SuperAdminDashboard({ navigation }: any) {
   const [hasPermission, setCameraPermission] =
     useState<CameraPermissionStatus>("not-determined");
   const device = useCameraDevice("back");
-  console.log(device);
+ 
+
+
   const codeScanner = useCodeScanner({
     codeTypes: ["qr"],
     onCodeScanned: (codes) => {
       if (typeof codes[0].value != "string") {
+        return false;
+      }
+      if (!codes[0].value.includes('"user_id":')) {
+        Toast.show({
+          type: "error",
+          position: "top",
+          text1: "Invalid QR Code",
+          text2: "Scanned QR Code is not compatibe. Please try again!",
+        });
         return false;
       }
       if (codes[0].value == undefined) {
@@ -44,9 +55,32 @@ export default function SuperAdminDashboard({ navigation }: any) {
       navigation.navigate("AdminCustomerAccount", { user_id: qr_data.user_id });
     },
   });
+
+
   const isFocused = useIsFocused();
   const appState = useAppState();
   const isActive = isFocused && appState === "active";
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      console.log("Requesting camera permission");
+      const permission = await Camera.requestCameraPermission();
+      console.log("Permission given: ", permission);
+      if (permission === "denied") {
+        Toast.show({
+          type: "error",
+          text1: "Permission Required",
+          text2:
+            "To use camera please give the application permission to use camera.",
+        });
+        navigation.navigate("login");
+      }
+      setCameraPermission(permission);
+      setShowCamera(true);
+    };
+    requestPermissions();
+  }, []);
+
   return (
     <ImageBackground
       source={require("../../assets/images/car-bg.png")}
@@ -67,9 +101,10 @@ export default function SuperAdminDashboard({ navigation }: any) {
               height: "100%",
               left: 0,
               right: 0,
+              overflow: "hidden",
             }}
             device={device}
-            isActive={showCamera}
+            isActive={isActive}
             codeScanner={codeScanner}
             resizeMode="cover"
           />
@@ -78,7 +113,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
             <Text>Camera not available</Text>
           </View>
         )}
-        <Button
+        {/* <Button
           buttonStyle={{
             width: 98,
             height: 99,
@@ -112,25 +147,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
           }
           loadingProps={{ animating: true }}
           loadingStyle={{}}
-          onPress={() => {
-            const requestPermissions = async () => {
-              console.log("Requesting camera permission");
-              const permission = await Camera.requestCameraPermission();
-              console.log("Permission given: ", permission);
-
-              if (permission === "denied") {
-                Toast.show({
-                  type: "error",
-                  text1: "Permission Required",
-                  text2:
-                    "To use camera please give the application permission to use camera.",
-                });
-              }
-              setCameraPermission(permission);
-              setShowCamera(true);
-            };
-            requestPermissions();
-          }}
+          onPress={() => {}}
         />
 
         <Image
@@ -144,7 +161,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
           source={require("../../assets/ui/reactable_bar_yellow.png")}
           width={360}
           height={59}
-        ></Image>
+        ></Image> */}
       </View>
     </ImageBackground>
   );

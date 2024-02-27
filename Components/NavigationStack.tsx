@@ -7,10 +7,11 @@ import { useRoute } from "@react-navigation/native";
 import SuperAdminDrawer from "./SuperAdminDrawer";
 import { StyleSheet } from "react-native";
 import { ActivityIndicator } from "react-native";
-import { Header } from "@rneui/base";
+import { Button, Header, Icon, Image } from "@rneui/base";
 import AdminDashboard from "../app/(admin)/AdminDashboard";
 import AdminCustomerAccount from "../app/(admin)/AdminCustomerAccount";
 const Navigation = createNativeStackNavigator();
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const MainStack = () => {
   return (
@@ -22,60 +23,79 @@ const MainStack = () => {
           headerShown: false, // Hide the header for the login screen
         }}
       />
-      
+
       <Navigation.Screen
         name="AdminDashboard"
         component={AdminDashboard}
-        options={{
+        options={({ navigation, route }) => ({
           title: "AdminDashboard",
           headerShown: true,
-          header(props) {
-            return (
-              <Header
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={{
-                  text: "Points And Perks",
-                  style: { color: "#fff",fontSize: 20},
-                }}
-                centerContainerStyle={{}}
-                containerStyle={{ width: "100%" }}
-                leftContainerStyle={{}}
-                linearGradientProps={{}}
-                placement="center"
-                rightContainerStyle={{}}
-                statusBarProps={{}}
-              />
-            );
+          headerTitle: "Points and Perks",
+          headerTitleAlign: "center",
+          headerStyle: {
+            backgroundColor: "yellow",
           },
-        }}
+          headerLeft: () => (
+            <Button
+              type="clear"
+              buttonStyle={{ width: "auto" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              icon={
+                <MaterialCommunityIcons
+                  name="arrow-left-bold-box-outline"
+                  size={40}
+                  color="black"
+                />
+              }
+              iconContainerStyle={{ backgroundColor: "#000" }}
+              loadingProps={{ animating: true }}
+              loadingStyle={{}}
+              onPress={() => {
+                navigation.navigate("login");
+              }}
+              titleProps={{}}
+              titleStyle={{ marginHorizontal: 5 }}
+            />
+          ),
+        })}
       />
-       <Navigation.Screen
+      <Navigation.Screen
         name="AdminCustomerAccount"
         component={AdminCustomerAccount}
-        options={{
+        options={({ navigation, route }) => ({
           title: "AdminCustomerAccount",
           headerShown: true,
-          header(props) {
-            return (
-              <Header
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={{
-                  text: "Points And Perks",
-                  style: { color: "#fff",fontSize: 20},
-                }}
-                centerContainerStyle={{}}
-                containerStyle={{ width: "100%" }}
-                leftContainerStyle={{}}
-                linearGradientProps={{}}
-                placement="center"
-                rightContainerStyle={{}}
-                statusBarProps={{}}
-              />
-            );
-          },
-        }}
+          headerLeft: () => (
+            <Button
+              type="clear"
+              buttonStyle={{ width: "auto" }}
+              containerStyle={{ margin: 5 }}
+              disabledStyle={{
+                borderWidth: 2,
+                borderColor: "#00F",
+              }}
+              disabledTitleStyle={{ color: "#00F" }}
+              icon={
+                <MaterialCommunityIcons
+                  name="arrow-left-bold-box-outline"
+                  size={40}
+                  color="black"
+                />
+              }
+              iconContainerStyle={{ backgroundColor: "#000" }}
+              loadingProps={{ animating: true }}
+              loadingStyle={{}}
+              onPress={() => {
+                navigation.navigate("AdminDashboard");
+              }}
+            />
+          ),
+        })}
       />
     </Navigation.Navigator>
   );
