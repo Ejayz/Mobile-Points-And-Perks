@@ -7,12 +7,6 @@ import { StatusBar } from "react-native";
 export default function App() {
   return (
     <NavigationContainer>
-      <StatusBar
-        barStyle={"dark-content"}
-        translucent
-        backgroundColor={"transparent"}
-        hidden={true}
-      />
       <MainStack />
       <Toast />
     </NavigationContainer>

@@ -23,32 +23,18 @@ const MainStack = () => {
           headerShown: false, // Hide the header for the login screen
         }}
       />
-      
+
       <Navigation.Screen
         name="AdminDashboard"
         component={AdminDashboard}
-        options={({navigation, route}) => ({
+        options={({ navigation, route }) => ({
           title: "AdminDashboard",
           headerShown: true,
-          header(props) {
-            return (
-              <Header
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={{
-                  text: "Points And Perks",
-                  style: { color: "#fff",fontSize: 20},
-                }}
-                centerContainerStyle={{}}
-                containerStyle={{ width: "100%" }}
-                leftContainerStyle={{}}
-                linearGradientProps={{}}
-                placement="center"
-                rightContainerStyle={{}}
-                statusBarProps={{}}
-              />
-            );
+          headerTitleAlign: "center",
+          headerStyle: {
+            backgroundColor: "yellow",
           },
+          headerTitle: "Points and Perks",
           headerLeft: () => (
             <Button
               type="clear"
@@ -81,10 +67,10 @@ const MainStack = () => {
           ),
         })}
       />
-       <Navigation.Screen
+      <Navigation.Screen
         name="AdminCustomerAccount"
         component={AdminCustomerAccount}
-        options={({navigation,route})=> ({
+        options={({ navigation, route }) => ({
           title: "AdminCustomerAccount",
           headerShown: true,
           headerTitleAlign: "center",
