@@ -4,10 +4,26 @@ import { View, Image, Text } from "react-native";
 import { SpeedDial } from "@rneui/themed";
 
 export default function AdminCustomerAccount({ navigation }: any) {
-  const [OpenEdit, setOpenEdit] = React.useState(false);
-
   return (
-    <>
+    <SpeedDial
+      isOpen
+      openIcon={{ name: "close", color: "#fff" }}
+      onOpen={() => console.log("onOpen()")}
+      onClose={() => console.log("onClose()")}
+      transitionDuration={150}
+      icon={{ name: "edit", color: "#fff" }}
+    >
+      <SpeedDial.Action
+        icon={{ name: "add", color: "#fff" }}
+        title="Add"
+        onPress={() => console.log("Add Something")}
+      />
+      <SpeedDial.Action
+        icon={{ name: "delete", color: "#fff" }}
+        title="Delete"
+        onPress={() => console.log("Delete Something")}
+      />
+
       <Card containerStyle={{}} wrapperStyle={{}}>
         <Card.Title>CARD WITH DIVIDER</Card.Title>
         <Card.Divider />
@@ -27,26 +43,6 @@ export default function AdminCustomerAccount({ navigation }: any) {
           <Text>Pranshu Chittora</Text>
         </View>
       </Card>
-      <SpeedDial
-        isOpen={OpenEdit}
-        openIcon={{ name: "close", color: "#fff" }}
-        onOpen={() => console.log("onOpen()")}
-        onClose={() => console.log("onClose()")}
-        onPressIn={() => setOpenEdit(!OpenEdit)}
-        transitionDuration={150}
-        icon={{ name: "menu", color: "#fff" }}
-      >
-        <SpeedDial.Action
-          icon={{ name: "add", color: "#fff" }}
-          title="Add Points"
-          onPress={() => console.log("Add Something")}
-        />
-        <SpeedDial.Action
-          icon={{ name: "edit", color: "#fff" }}
-          title="Edit Points"
-          onPress={() => console.log("Delete Something")}
-        />
-      </SpeedDial>
-    </>
+    </SpeedDial>
   );
 }
