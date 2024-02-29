@@ -19,82 +19,77 @@ import {
   useCodeScanner,
 } from "react-native-vision-camera";
 import { useIsFocused } from "@react-navigation/native";
-import { Card, PricingCard } from "@rneui/themed";
+import { Card, LinearProgress, PricingCard } from "@rneui/themed";
 
-type Action = {
-  id: number;
-  quantity: number;
-  status: string;
-  action_id: number;
-  reward_id: number;
-  employee_id: number;
-  campaign_id: number;
-  created_at: string;
-  updated_at: string | null;
-  removed_at: string | null;
-  is_exist: number;
-  name: string;
-  description: string;
-  reward_type_id: number;
-  ActionName: string;
-  ActionDescription: string;
-  RewardName: string;
-  RewardDescription: string;
-};
-
-type actionList = {
-  actions: Action[];
-};
-
-type DialogData = {
-  DialogActionList: Action[];
-  campaign_id: number;
-};
-
-type Campaign = {
+interface Reward {
   id: number;
   name: string;
   description: string;
-  start_date: string;
-  end_date: string;
+  point_cost: number;
   status: string;
   package_id: number;
+  reward_id: number;
   employee_id: number;
   created_at: string;
   updated_at: string | null;
   removed_at: string | null;
   is_exist: number;
-  actions: Action[];
-};
+  reward_type_id: number;
+  quantity: number;
+  RedeemID: number;
+  RewardName: string;
+  RewardDescription: string;
+  RedeemName: string;
+  RedeemDescription: string;
+}
 
-interface CampaignData {
+interface RewardResponse {
   code: number;
-  data: Campaign[];
+  data: Reward[];
 }
 
 export default function CustomerCampaign({ navigation }: any) {
-  const [data, setData] = useState<CampaignData>();
+  const [data, setData] = useState<RewardResponse>();
   const [page, setPage] = useState(0);
   const [isRequestion, setIsRequesting] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [action, setAction] = useState<DialogData>();
   const [noNetwork, setNoNetwork] = useState(false);
   const [transactionNumber, setTransactionNumber] = useState("");
-  const [showTransactionInstruction, setShowTransactionInstruction] =
-    useState(false);
+  const [points, setPoints] = useState();
   const [confirmDialog, setConfirmDialog] = useState({
     dialogState: false,
-    campaign_id: 0,
+    redeem: 0,
   });
+
+  const [showTransactionInstruction, setShowTransactionInstruction] =
+    useState(false);
+  const fetchCustomerPoints = async () => {
+    const headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+    };
+
+    let response = await fetch(
+      `https://pap.pointsandperks.ca/api/private/getUserPoints`,
+      {
+        method: "GET",
+        headers: headersList,
+      }
+    );
+
+    let data = await response.json();
+    setPoints(data.data);
+  };
+
   const fetchData = async () => {
     try {
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
       };
-
-      let response = await fetch(
-        `https://pap.pointsandperks.ca/api/private/getCampaignList/?page=${page}`,
+      const response = await fetch(
+        `https://pap.pointsandperks.ca/api/private/getRedeemList/?page=${page}`,
         {
           method: "GET",
           headers: headersList,
@@ -115,24 +110,26 @@ export default function CustomerCampaign({ navigation }: any) {
 
   useEffect(() => {
     function init() {
+      fetchCustomerPoints();
       fetchData();
     }
     init();
   }, [page]);
 
-  const createCampaignTransaction = async (campaign_id: number) => {
+  const createRedeemTransaction = async (id: number) => {
+    console.log(id);
+    setConfirmDialog({ dialogState: false, redeem: 0 });
     let headersList = {
       Accept: "*/*",
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
       "Content-Type": "application/json",
     };
-    setConfirmDialog({ dialogState: false, campaign_id: 0 });
     let response = await fetch(
-      `https://pap.pointsandperks.ca/api/private/createCampaignTransaction`,
+      `https://pap.pointsandperks.ca/api/private/createRedeemTransaction`,
       {
         method: "POST",
         headers: headersList,
-        body: JSON.stringify({ campaign_id }),
+        body: JSON.stringify({ redeem_id: id }),
       }
     );
     if (response.status == 502) {
@@ -145,20 +142,19 @@ export default function CustomerCampaign({ navigation }: any) {
       });
     } else {
       let data = await response.json();
-
+      console.log(data);
       if (data.code == 200) {
         setShowDialog(!showDialog);
         setTransactionNumber(data.data);
         setShowTransactionInstruction(true);
-        setAction(undefined);
         Toast.show({
           type: "success",
           text1: "Transaction Created",
           text2: "Transaction has been created successfully.",
         });
       } else {
-        setShowDialog(!showDialog);
         console.log(data.code);
+        setIsRequesting(false);
         if (data.code == 400) {
           Toast.show({
             type: "error",
@@ -175,7 +171,14 @@ export default function CustomerCampaign({ navigation }: any) {
       }
     }
   };
-
+  const calculateCompletionPercentage = (
+    currentPoints: number,
+    requiredPoints: number
+  ) => {
+    const percentage = (currentPoints / requiredPoints) * 100;
+    const calculated = percentage / 100;
+    return calculated;
+  };
   if (noNetwork) {
     return (
       <View
@@ -219,23 +222,24 @@ export default function CustomerCampaign({ navigation }: any) {
           isVisible={confirmDialog.dialogState}
         >
           <Dialog.Title title="Confirm Action" />
-          <Text>Are you sure you want to claim this campaign?</Text>
+          <Text>Are you sure you want to redeem this reward?</Text>
           <Dialog.Actions>
             <Dialog.Button
               title="CONFIRM"
               onPress={() => {
                 setIsRequesting(true);
-                createCampaignTransaction(confirmDialog.campaign_id);
+                createRedeemTransaction(confirmDialog.redeem);
               }}
             />
             <Dialog.Button
               title="CANCEL"
               onPress={() => {
-                setConfirmDialog({ dialogState: false, campaign_id: 0 });
+                setConfirmDialog({ dialogState: false, redeem: 0 });
               }}
             />
           </Dialog.Actions>
         </Dialog>
+
         <Dialog
           overlayStyle={{
             backgroundColor: "white",
@@ -264,120 +268,16 @@ export default function CustomerCampaign({ navigation }: any) {
             <Dialog.Button
               title="DONE"
               onPress={() => {
+                fetchCustomerPoints();
+                fetchData();
+                setData(undefined);
+                setPoints(undefined);
+                setIsRequesting(false);
                 setTransactionNumber("");
                 setShowTransactionInstruction(!showTransactionInstruction);
               }}
             />
           </Dialog.Actions>
-        </Dialog>
-        <Dialog
-          isVisible={showDialog}
-          onBackdropPress={() => setShowDialog(!showDialog)}
-          overlayStyle={{
-            backgroundColor: "white",
-          }}
-          onShow={() => {
-            console.log(action);
-          }}
-        >
-          <ScrollView>
-            <Dialog.Title title="Campaign Actions and Rewards" />
-            <Text>Complete all of actions to get rewards.</Text>
-            {action == undefined
-              ? null
-              : action.DialogActionList.map((act, index) => {
-                  return (
-                    <Card containerStyle={{}} wrapperStyle={{}}>
-                      <Card.FeaturedTitle
-                        style={{
-                          color: "black",
-                          fontSize: 15,
-                        }}
-                      >
-                        Action:{" "}
-                        <Text
-                          style={{
-                            color: "black",
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.name}
-                        </Text>
-                      </Card.FeaturedTitle>
-                      <Card.FeaturedSubtitle
-                        style={{
-                          color: "black",
-                          fontSize: 14,
-                        }}
-                      >
-                        Description:{" "}
-                        <Text
-                          style={{
-                            color: "black",
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.description}
-                        </Text>
-                      </Card.FeaturedSubtitle>
-                      <Card.Title
-                        style={{
-                          fontSize: 12,
-                          textAlign: "left",
-                        }}
-                      >
-                        Reward:{" "}
-                        <Text
-                          style={{
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.RewardName}
-                        </Text>
-                      </Card.Title>
-
-                      <View
-                        style={{
-                          flex: 1,
-                          flexDirection: "column",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                          }}
-                        >
-                          Reward Description
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 10,
-                          }}
-                        >
-                          {act.RewardName}
-                        </Text>
-                      </View>
-                    </Card>
-                  );
-                })}
-
-            <Dialog.Actions>
-              <Dialog.Button
-                title="CREATE TRANSACTION"
-                disabled={action == undefined ? true : false}
-                onPress={() =>
-                  setConfirmDialog({
-                    dialogState: true,
-                    campaign_id: action == undefined ? 0 : action.campaign_id,
-                  })
-                }
-              />
-              <Dialog.Button
-                title="CANCEL"
-                onPress={() => setShowDialog(!showDialog)}
-              />
-            </Dialog.Actions>
-          </ScrollView>
         </Dialog>
         <ImageBackground
           source={require("../../assets/images/car-bg.png")}
@@ -389,7 +289,7 @@ export default function CustomerCampaign({ navigation }: any) {
             backgroundColor={"transparent"}
             hidden={true}
           />
-          {data == null ? (
+          {data == null || points == undefined ? (
             <ScrollView
               style={{
                 width: "100%",
@@ -510,74 +410,73 @@ export default function CustomerCampaign({ navigation }: any) {
                   textAlign: "center",
                 }}
               >
-                No Campaigns
+                No redeems availabe.
               </Text>
             </View>
           ) : (
-            <ScrollView
-              refreshControl={
-                <>
-                  <Button
-                    title="Refresh"
-                    onPress={() => {
-                      fetchData();
-                    }}
-                  />
-                </>
-              }
-            >
-              {data.data.map((campaign, index) => {
+            <ScrollView>
+              {data.data.map((redeem, index) => {
+                const percentage = calculateCompletionPercentage(
+                  points,
+                  redeem.point_cost
+                );
+
                 return (
-                  <Card
-                    key={index}
-                    containerStyle={{
-                      borderRadius: 10,
-                    }}
-                    wrapperStyle={{}}
-                  >
-                    <Card.Title>{campaign.name}</Card.Title>
+                  <Card key={index} containerStyle={{ borderRadius: 10 }}>
+                    <Card.Title>{redeem.RedeemName}</Card.Title>
                     <Badge
-                      status={campaign.status == "active" ? "success" : "error"}
+                      status={
+                        redeem.status == "available" ? "success" : "error"
+                      }
                       containerStyle={{
                         position: "absolute",
                         top: 5,
                         right: 40,
                       }}
-                      value={campaign.status.toUpperCase()}
+                      value={redeem.status.toUpperCase()}
                     />
-                    <View
-                      style={{
-                        position: "relative",
-                        alignItems: "center",
-                      }}
-                    >
+                    <Card.Divider />
+                    <View style={{ alignItems: "center" }}>
                       <Text
                         style={{
-                          marginTop: 10,
-                          marginBottom: 10,
+                          fontSize: 15,
+                          fontWeight: "bold",
                         }}
                       >
-                        {campaign.description}
+                        {redeem.point_cost} Frontier Points
                       </Text>
-                      <View
-                        style={{
-                          marginTop: 10,
-                          marginBottom: 10,
-                        }}
-                      >
-                        <Button
-                          title="View Actions"
-                          disabled={campaign.status == "active" ? false : true}
-                          onPress={() => {
-                            setAction({
-                              DialogActionList: campaign.actions,
-                              campaign_id: campaign.id,
-                            });
-                            setShowDialog(!showDialog);
-                          }}
-                        />
-                      </View>
+                      <Text style={{}}>Reward: {redeem.RewardName}</Text>
+                      <Text style={{}}>
+                        Description: {redeem.RedeemDescription}
+                      </Text>
+                      <Text style={{}}>
+                        {points} of {redeem.point_cost} Fronter Points
+                      </Text>
+
+                      <LinearProgress
+                        variant="determinate"
+                        style={{ width: "50%" }}
+                        color="secondary"
+                        value={percentage}
+                      />
                     </View>
+                    <Button
+                      title={"Redeem"}
+                      buttonStyle={{ borderRadius: 10, marginTop: 20 }}
+                      onPress={() => {
+                        setConfirmDialog({
+                          dialogState: true,
+                          redeem: redeem.RedeemID,
+                        });
+                      }}
+                      disabled={
+                        points < redeem.point_cost ||
+                        isRequestion ||
+                        redeem.status == "out of stock"
+                          ? true
+                          : false
+                      }
+                    />
                   </Card>
                 );
               })}
@@ -588,6 +487,7 @@ export default function CustomerCampaign({ navigation }: any) {
                   flex: 1,
                   flexDirection: "row",
                   justifyContent: "center",
+                  marginBottom: 20,
                 }}
               >
                 <Button

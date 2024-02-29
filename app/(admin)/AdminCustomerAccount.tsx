@@ -531,7 +531,12 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
             >
               Address:
             </Text>
-            <Text>
+            <Text
+              style={{
+               flex: 1,
+               textAlign: "left",
+              }}
+            >
               {data == undefined ? "Loading..." : data.data.address_1}{" "}
               {data == undefined ? "Loading..." : data.data.address_2}{" "}
               {data == undefined ? "Loading..." : data.data.city}{" "}

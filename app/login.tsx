@@ -68,7 +68,7 @@ const Login = ({ navigation }: any) => {
               text2: "You do not have the privilege to access this page.",
             });
           } else if (token.role == 4) {
-            navigation.navigate("AdminDashboard");
+            navigation.navigate("CustomerDrawerNavigator");
             forms.current?.resetForm();
           }
         } else {
@@ -94,7 +94,6 @@ const Login = ({ navigation }: any) => {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      console.log("Requesting camera permission");
       const permission = await Camera.requestCameraPermission();
       console.log("Permission given: ", permission);
       if (permission === "denied") {

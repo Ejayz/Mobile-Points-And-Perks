@@ -23,7 +23,7 @@ export default function SuperAdminDashboard({ navigation }: any) {
   const [hasPermission, setCameraPermission] =
     useState<CameraPermissionStatus>("not-determined");
   const device = useCameraDevice("back");
-
+  const [isActive, setIsActive] = useState(true);
   const codeScanner = useCodeScanner({
     codeTypes: ["qr"],
     onCodeScanned: (codes) => {
@@ -57,7 +57,13 @@ export default function SuperAdminDashboard({ navigation }: any) {
 
   const isFocused = useIsFocused();
   const appState = useAppState();
-  const isActive = isFocused && appState === "active";
+  useEffect(() => {
+    if (isFocused && appState === "active") {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
+  }, [isFocused && appState === "active"]);
 
   useEffect(() => {
     const requestPermissions = async () => {

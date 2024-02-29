@@ -4,7 +4,7 @@ import Login from "../app/login";
 import SuperAdminDashboard from "../app/(admin)/AdminDashboard";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useRoute } from "@react-navigation/native";
-import SuperAdminDrawer from "./SuperAdminDrawer";
+import SuperAdminDrawer from "./CustomerNavigator";
 import { StyleSheet } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { Button, Header } from "@rneui/base";
@@ -12,6 +12,7 @@ import AdminDashboard from "../app/(admin)/AdminDashboard";
 import AdminCustomerAccount from "../app/(admin)/AdminCustomerAccount";
 const Navigation = createNativeStackNavigator();
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import CustomerNavigator from "./CustomerNavigator";
 
 const MainStack = () => {
   return (
@@ -105,6 +106,15 @@ const MainStack = () => {
               }}
             />
           ),
+        })}
+      />
+      <Navigation.Screen
+        name="CustomerDrawerNavigator"
+        component={CustomerNavigator}
+        options={({ navigation, route }) => ({
+          title: "AdminCustomerAccount",
+          headerShown: false,
+          headerTitleAlign: "center",
         })}
       />
     </Navigation.Navigator>
