@@ -60,7 +60,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       };
 
       let response = await fetch(
-        `https://pap.pointsandperks.ca/api/private/getCustomerProfileCardMobile?user_id=${user_id}`,
+        `https://pointsandperks.ca/api/private/getCustomerProfileCardMobile?user_id=${user_id}`,
         {
           method: "GET",
           headers: headersList,
@@ -133,7 +133,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
     });
 
     let response = await fetch(
-      "https://pap.pointsandperks.ca/api/private/AddPointsMobile",
+      "https://pointsandperks.ca/api/private/AddPointsMobile",
       {
         method: "POST",
         body: bodyContent,
@@ -176,7 +176,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       });
 
       let response = await fetch(
-        "https://pap.pointsandperks.ca/api/private/UpdatePointsMobile",
+        "https://pointsandperks.ca/api/private/UpdatePointsMobile",
         {
           method: "POST",
           body: bodyContent,

@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   ImageBackground,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -19,76 +20,73 @@ const Login = ({ navigation }: any) => {
   const forms = useRef<FormikProps<any>>(null);
   const loginHandler = async (values: any, navigate: any) => {
     setIsRequesting(true);
-    try {
-      let headersList = {
-        Accept: "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
 
-        "Content-Type": "application/json",
-      };
-      let bodyContent = JSON.stringify({
-        email: values.email,
-        password: values.password,
-      });
-      let response = await fetch(
-        "https://pap.pointsandperks.ca/api/private/authentication/login",
-        {
-          method: "POST",
-          body: bodyContent,
-          headers: headersList,
-        }
-      );
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+
+      "Content-Type": "application/json",
+    };
+    let bodyContent = JSON.stringify({
+      email: values.email,
+      password: values.password,
+    });
+    let response = await fetch(
+      "https://pointsandperks.ca/api/private/authentication/login",
+      {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      }
+    );
+
+    if (response.status == 502) {
+      throw new Error("Cannot Connect to Server . Please try again.");
+    } else {
+      let data = await response.json();
 
       if (response.status == 502) {
-        throw new Error("Cannot Connect to Server . Please try again.");
-      } else {
-        let data = await response.json();
-
-        if (response) {
-          setIsRequesting(false);
-        }
-
-        if (data.code == 200 && data.token) {
-          const token = data.token;
-          if (token.role == 1) {
-            Toast.show({
-              type: "error",
-              position: "top",
-              text1: "Privillage Required",
-              text2: "You do not have the privilege to access this page.",
-            });
-          } else if (token.role == 2) {
-            navigation.navigate("AdminDashboard");
-            forms.current?.resetForm();
-          } else if (token.role == 3) {
-            Toast.show({
-              type: "error",
-              position: "top",
-              text1: "Privillage Required",
-              text2: "You do not have the privilege to access this page.",
-            });
-          } else if (token.role == 4) {
-            navigation.navigate("CustomerDrawerNavigator");
-            forms.current?.resetForm();
-          }
-        } else {
+        setIsRequesting(false);
+        Toast.show({
+          type: "error",
+          text1: "Connection Error",
+          text2:
+            "Cannot connect to server . Please contact server administrator.",
+        });
+      }
+      setIsRequesting(false);
+      if (data.code == 200 && data.token) {
+        const token = data.token;
+        if (token.role == 1) {
           Toast.show({
             type: "error",
             position: "top",
-            text1: "Login Error",
-            text2: data.message,
+            text1: "Privillage Required",
+            text2: "You do not have the privilege to access this page.",
           });
+        } else if (token.role == 2) {
+          navigation.navigate("AdminDashboard");
+          forms.current?.resetForm();
+        } else if (token.role == 3) {
+          Toast.show({
+            type: "error",
+            position: "top",
+            text1: "Privillage Required",
+            text2: "You do not have the privilege to access this page.",
+          });
+        } else if (token.role == 4) {
+          navigation.navigate("CustomerDrawerNavigator");
+          forms.current?.resetForm();
         }
+      } else {
+        setIsRequesting(false);
+        Toast.show({
+          type: "error",
+          position: "top",
+          text1: "Login Error",
+          text2: data.message,
+        });
       }
-    } catch (error: any) {
-      setIsRequesting(false);
-      console.log(error);
-      Toast.show({
-        type: "error",
-        text1: "Connection Error",
-        text2:
-          "Cannot connect to server . Please contact server administrator.",
-      });
     }
   };
 
@@ -114,6 +112,12 @@ const Login = ({ navigation }: any) => {
       source={require("../assets/images/car-bg.png")}
       style={{ width: "100%", height: "100%" }}
     >
+      <StatusBar
+        barStyle={"dark-content"}
+        translucent
+        backgroundColor={"transparent"}
+        hidden={true}
+      />
       <View style={styles.container}>
         <Formik
           initialValues={{

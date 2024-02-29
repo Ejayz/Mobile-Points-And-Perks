@@ -94,7 +94,7 @@ export default function CustomerCampaign({ navigation }: any) {
       };
 
       let response = await fetch(
-        `https://pap.pointsandperks.ca/api/private/getCampaignList/?page=${page}`,
+        `https://pointsandperks.ca/api/private/getCampaignList/?page=${page}`,
         {
           method: "GET",
           headers: headersList,
@@ -128,7 +128,7 @@ export default function CustomerCampaign({ navigation }: any) {
     };
     setConfirmDialog({ dialogState: false, campaign_id: 0 });
     let response = await fetch(
-      `https://pap.pointsandperks.ca/api/private/createCampaignTransaction`,
+      `https://pointsandperks.ca/api/private/createCampaignTransaction`,
       {
         method: "POST",
         headers: headersList,

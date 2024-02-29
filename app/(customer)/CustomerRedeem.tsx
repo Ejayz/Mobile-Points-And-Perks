@@ -48,7 +48,7 @@ interface RewardResponse {
   data: Reward[];
 }
 
-export default function CustomerCampaign({ navigation }: any) {
+export default function CustomerRedeem({ navigation }: any) {
   const [data, setData] = useState<RewardResponse>();
   const [page, setPage] = useState(0);
   const [isRequestion, setIsRequesting] = useState(false);
@@ -70,7 +70,7 @@ export default function CustomerCampaign({ navigation }: any) {
     };
 
     let response = await fetch(
-      `https://pap.pointsandperks.ca/api/private/getUserPoints`,
+      `https://pointsandperks.ca/api/private/getUserPoints`,
       {
         method: "GET",
         headers: headersList,
@@ -89,7 +89,7 @@ export default function CustomerCampaign({ navigation }: any) {
         "Content-Type": "application/json",
       };
       const response = await fetch(
-        `https://pap.pointsandperks.ca/api/private/getRedeemList/?page=${page}`,
+        `https://pointsandperks.ca/api/private/getRedeemList/?page=${page}`,
         {
           method: "GET",
           headers: headersList,
@@ -125,7 +125,7 @@ export default function CustomerCampaign({ navigation }: any) {
       "Content-Type": "application/json",
     };
     let response = await fetch(
-      `https://pap.pointsandperks.ca/api/private/createRedeemTransaction`,
+      `https://pointsandperks.ca/api/private/createRedeemTransaction`,
       {
         method: "POST",
         headers: headersList,
