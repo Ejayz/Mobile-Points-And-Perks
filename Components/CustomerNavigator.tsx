@@ -20,7 +20,7 @@ import Toast from "react-native-toast-message";
 const CustomerNavigator = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="Home"
+      initialRouteName="Campaigns"
       drawerContent={(props) => {
         return (
           <DrawerContentScrollView {...props}>
