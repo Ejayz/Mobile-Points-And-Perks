@@ -494,7 +494,6 @@ export default function CustomerRedeem({ navigation }: any) {
                   title="Back"
                   style={{
                     marginBottom: 10,
-                    width: "50%",
                   }}
                   disabled={
                     data == undefined || data.data.length < 10 ? true : false
@@ -519,7 +518,6 @@ export default function CustomerRedeem({ navigation }: any) {
                   title="Next"
                   style={{
                     marginBottom: 10,
-                    width: "50%",
                   }}
                   disabled={
                     data == undefined || data.data.length < 10 ? true : false

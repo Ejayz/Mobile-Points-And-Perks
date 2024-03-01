@@ -286,80 +286,80 @@ export default function CustomerCampaign({ navigation }: any) {
             {action == undefined
               ? null
               : action.DialogActionList.map((act, index) => {
-                  return (
-                    <Card containerStyle={{}} wrapperStyle={{}}>
-                      <Card.FeaturedTitle
+                return (
+                  <Card key={index} containerStyle={{}} wrapperStyle={{}}>
+                    <Card.FeaturedTitle
+                      style={{
+                        color: "black",
+                        fontSize: 15,
+                      }}
+                    >
+                      Action:{" "}
+                      <Text
                         style={{
                           color: "black",
-                          fontSize: 15,
+                          fontSize: 13,
                         }}
                       >
-                        Action:{" "}
-                        <Text
-                          style={{
-                            color: "black",
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.name}
-                        </Text>
-                      </Card.FeaturedTitle>
-                      <Card.FeaturedSubtitle
+                        {act.name}
+                      </Text>
+                    </Card.FeaturedTitle>
+                    <Card.FeaturedSubtitle
+                      style={{
+                        color: "black",
+                        fontSize: 14,
+                      }}
+                    >
+                      Description:{" "}
+                      <Text
                         style={{
                           color: "black",
-                          fontSize: 14,
+                          fontSize: 13,
                         }}
                       >
-                        Description:{" "}
-                        <Text
-                          style={{
-                            color: "black",
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.description}
-                        </Text>
-                      </Card.FeaturedSubtitle>
-                      <Card.Title
+                        {act.description}
+                      </Text>
+                    </Card.FeaturedSubtitle>
+                    <Card.Title
+                      style={{
+                        fontSize: 12,
+                        textAlign: "left",
+                      }}
+                    >
+                      Reward:{" "}
+                      <Text
                         style={{
-                          fontSize: 12,
-                          textAlign: "left",
+                          fontSize: 13,
                         }}
                       >
-                        Reward:{" "}
-                        <Text
-                          style={{
-                            fontSize: 13,
-                          }}
-                        >
-                          {act.RewardName}
-                        </Text>
-                      </Card.Title>
+                        {act.RewardName}
+                      </Text>
+                    </Card.Title>
 
-                      <View
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Text
                         style={{
-                          flex: 1,
-                          flexDirection: "column",
+                          fontSize: 11,
                         }}
                       >
-                        <Text
-                          style={{
-                            fontSize: 11,
-                          }}
-                        >
-                          Reward Description
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 10,
-                          }}
-                        >
-                          {act.RewardName}
-                        </Text>
-                      </View>
-                    </Card>
-                  );
-                })}
+                        Reward Description
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                        }}
+                      >
+                        {act.RewardName}
+                      </Text>
+                    </View>
+                  </Card>
+                );
+              })}
 
             <Dialog.Actions>
               <Dialog.Button
@@ -493,6 +493,7 @@ export default function CustomerCampaign({ navigation }: any) {
                 height={40}
               />
             </ScrollView>
+
           ) : data.data.length == 0 ? (
             <View
               style={{
@@ -515,16 +516,6 @@ export default function CustomerCampaign({ navigation }: any) {
             </View>
           ) : (
             <ScrollView
-              refreshControl={
-                <>
-                  <Button
-                    title="Refresh"
-                    onPress={() => {
-                      fetchData();
-                    }}
-                  />
-                </>
-              }
             >
               {data.data.map((campaign, index) => {
                 return (
@@ -594,7 +585,6 @@ export default function CustomerCampaign({ navigation }: any) {
                   title="Back"
                   style={{
                     marginBottom: 10,
-                    width: "50%",
                   }}
                   disabled={
                     data == undefined || data.data.length < 10 ? true : false
@@ -619,7 +609,6 @@ export default function CustomerCampaign({ navigation }: any) {
                   title="Next"
                   style={{
                     marginBottom: 10,
-                    width: "50%",
                   }}
                   disabled={
                     data == undefined || data.data.length < 10 ? true : false
