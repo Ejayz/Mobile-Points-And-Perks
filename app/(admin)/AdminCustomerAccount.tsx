@@ -51,36 +51,33 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
   });
   const UpdatePointsForm = React.useRef<FormikProps<any>>(null);
   const [showUpdatePoints, setShowUpdatePoints] = React.useState(false);
-  const fetchData = async () => {
-    try {
-      let headersList = {
-        Accept: "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-        "Content-Type": "application/json",
-      };
 
-      let response = await fetch(
-        `https://pointsandperks.ca/api/private/getCustomerProfileCardMobile?user_id=${user_id}`,
-        {
-          method: "GET",
-          headers: headersList,
-        }
-      );
-      if (response.status == 502) {
-        throw new Error("Cannot connect to server .Please try again.");
-      } else {
-        let data = await response.json();
-        setData(data);
-        console.log(data);
+  const fetchData = async () => {
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
+    };
+
+    let response = await fetch(
+      `https://pointsandperks.ca/api/private/getCustomerProfileCardMobile?user_id=${user_id}`,
+      {
+        method: "GET",
+        headers: headersList,
       }
-    } catch (error: any) {
-      console.log(error);
+    );
+    console.log(response);
+    if (response.status == 502) {
       Toast.show({
         type: "error",
         text1: "Connection Error",
         text2:
           "Cannot connect to server . Please contact server administrator.",
       });
+    } else {
+      let data = await response.json();
+      setData(data);
+      console.log(data);
     }
   };
   React.useEffect(() => {
@@ -163,60 +160,53 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
   };
 
   const updatePoints = async (values: any) => {
-    try {
-      let headersList = {
-        Accept: "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-        "Content-Type": "application/json",
-      };
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
+    };
 
-      let bodyContent = JSON.stringify({
-        points: values.points,
-        customer_id: user_id,
-      });
+    let bodyContent = JSON.stringify({
+      points: values.points,
+      customer_id: user_id,
+    });
 
-      let response = await fetch(
-        "https://pointsandperks.ca/api/private/UpdatePointsMobile",
-        {
-          method: "POST",
-          body: bodyContent,
-          headers: headersList,
-        }
-      );
-
-      if (response.status == 502) {
-        throw new Error(
-          "Cannot connect to server. Please contact server administrator."
-        );
-      } else {
-        let data = await response.json();
-        if (data.code == 200) {
-          await fetchData();
-          setShowUpdatePoints(!showUpdatePoints);
-
-          Toast.show({
-            type: "success",
-            text1: "Update Success",
-            text2: data.message,
-          });
-
-          AddPointsForm.current?.resetForm();
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Update Error",
-            text2: data.message,
-          });
-        }
+    let response = await fetch(
+      "https://pointsandperks.ca/api/private/UpdatePointsMobile",
+      {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
       }
-    } catch (error: any) {
-      console.log(error);
+    );
+
+    if (response.status == 502) {
       Toast.show({
         type: "error",
         text1: "Connection Error",
         text2:
           "Cannot connect to server . Please contact server administrator.",
       });
+    } else {
+      let data = await response.json();
+      if (data.code == 200) {
+        await fetchData();
+        setShowUpdatePoints(!showUpdatePoints);
+
+        Toast.show({
+          type: "success",
+          text1: "Update Success",
+          text2: data.message,
+        });
+
+        AddPointsForm.current?.resetForm();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Update Error",
+          text2: data.message,
+        });
+      }
     }
   };
 
@@ -434,124 +424,45 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
           )}
         </Formik>
       </Dialog>
-      <Card containerStyle={{}} wrapperStyle={{}}>
-        <Card.Divider />
-        <View
-          style={{
-            position: "relative",
-            alignItems: "center",
-          }}
-        >
-          <Avatar
-            size={96}
-            rounded
-            title={`${
-              data == undefined
-                ? "L"
-                : `${data.data.first_name.charAt(
-                    0
-                  )}${data.data.last_name.charAt(0)}`
-            }`}
-            containerStyle={{ backgroundColor: "purple" }}
-            source={{ uri: "https://" }}
-          />
-
-          <Card.Title
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              marginTop: 2,
-              marginBottom: 10,
-            }}
-          >
-            {" "}
-            {data == undefined
-              ? "Loading"
-              : `${data.data.first_name} ${data.data.middle_name} ${data.data.last_name}`}
-          </Card.Title>
-
+      {data == undefined ? (
+        <Text>Loading...</Text>
+      ) : (
+        <Card containerStyle={{}} wrapperStyle={{}}>
+          <Card.Divider />
           <View
             style={{
-              width: "100%",
-              flex: 0,
-              marginTop: 1,
-              marginBottom: 1,
-              flexDirection: "row",
+              position: "relative",
+              alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                marginLeft: 0,
-                fontSize: 15,
-                fontWeight: "bold",
-              }}
-            >
-              Phone Number:{" "}
-            </Text>
-            <Text>
-              {data == undefined ? "Loading" : `${data.data.phone_number}`}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 1,
-              marginBottom: 1,
-              width: "100%",
-              flex: 0,
-              flexDirection: "row",
-            }}
-          >
-            <Text
-              style={{
-                marginLeft: 0,
-                fontSize: 15,
-                fontWeight: "bold",
-              }}
-            >
-              Email:
-            </Text>
-            <Text>{data == undefined ? "Loading" : `${data.data.email}`}</Text>
-          </View>
-          <View
-            style={{
-              marginTop: 1,
-              marginBottom: 1,
-              width: "100%",
-              flex: 0,
-              flexDirection: "row",
-            }}
-          >
-            <Text
-              style={{
-                marginLeft: 0,
-                left: 0,
-                fontSize: 15,
-                fontWeight: "bold",
-              }}
-            >
-              Address:
-            </Text>
-            <Text
-              style={{
-               flex: 1,
-               textAlign: "left",
-              }}
-            >
-              {data == undefined ? "Loading..." : data.data.address_1}{" "}
-              {data == undefined ? "Loading..." : data.data.address_2}{" "}
-              {data == undefined ? "Loading..." : data.data.city}{" "}
-              {data == undefined ? "Loading..." : data.data.state_province}{" "}
-              {data == undefined ? "Loading..." : data.data.zip_code}{" "}
-              {data == undefined ? "Loading..." : data.data.country}
-            </Text>
-          </View>
+            <Avatar
+              size={96}
+              rounded
+              title={`${
+                data == undefined
+                  ? "L"
+                  : `${data.data.first_name.charAt(
+                      0
+                    )}${data.data.last_name.charAt(0)}`
+              }`}
+              containerStyle={{ backgroundColor: "purple" }}
+              source={{ uri: "https://" }}
+            />
 
-          <Card
-            containerStyle={{
-              width: "100%",
-            }}
-            wrapperStyle={{}}
-          >
+            <Card.Title
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginTop: 2,
+                marginBottom: 10,
+              }}
+            >
+              {" "}
+              {data == undefined
+                ? "Loading"
+                : `${data.data.first_name} ${data.data.middle_name} ${data.data.last_name}`}
+            </Card.Title>
+
             <View
               style={{
                 width: "100%",
@@ -568,100 +479,186 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                   fontWeight: "bold",
                 }}
               >
-                Status:{" "}
+                Phone Number:{" "}
               </Text>
               <Text>
-                <Badge
-                  badgeStyle={{
-                    borderRadius: 25,
-                    marginTop: "auto",
-                    marginBottom: "auto",
+                {data == undefined ? "Loading" : `${data.data.phone_number}`}
+              </Text>
+            </View>
+            <View
+              style={{
+                marginTop: 1,
+                marginBottom: 1,
+                width: "100%",
+                flex: 0,
+                flexDirection: "row",
+              }}
+            >
+              <Text
+                style={{
+                  marginLeft: 0,
+                  fontSize: 15,
+                  fontWeight: "bold",
+                }}
+              >
+                Email:
+              </Text>
+              <Text>
+                {data == undefined ? "Loading" : `${data.data.email}`}
+              </Text>
+            </View>
+            <View
+              style={{
+                marginTop: 1,
+                marginBottom: 1,
+                width: "100%",
+                flex: 0,
+                flexDirection: "row",
+              }}
+            >
+              <Text
+                style={{
+                  marginLeft: 0,
+                  left: 0,
+                  fontSize: 15,
+                  fontWeight: "bold",
+                }}
+              >
+                Address:
+              </Text>
+              <Text
+                style={{
+                  flex: 1,
+                  textAlign: "left",
+                }}
+              >
+                {data == undefined ? "Loading..." : data.data.address_1}{" "}
+                {data == undefined ? "Loading..." : data.data.address_2}{" "}
+                {data == undefined ? "Loading..." : data.data.city}{" "}
+                {data == undefined ? "Loading..." : data.data.state_province}{" "}
+                {data == undefined ? "Loading..." : data.data.zip_code}{" "}
+                {data == undefined ? "Loading..." : data.data.country}
+              </Text>
+            </View>
+
+            <Card
+              containerStyle={{
+                width: "100%",
+              }}
+              wrapperStyle={{}}
+            >
+              <View
+                style={{
+                  width: "100%",
+                  flex: 0,
+                  marginTop: 1,
+                  marginBottom: 1,
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 0,
+                    fontSize: 15,
+                    fontWeight: "bold",
                   }}
-                  containerStyle={{}}
-                  onPress={() => {
-                    alert("onPress");
+                >
+                  Status:{" "}
+                </Text>
+                <Text>
+                  <Badge
+                    badgeStyle={{
+                      borderRadius: 25,
+                      marginTop: "auto",
+                      marginBottom: "auto",
+                    }}
+                    containerStyle={{}}
+                    onPress={() => {
+                      alert("onPress");
+                    }}
+                    status="success"
+                    textProps={{}}
+                    textStyle={{ color: "white" }}
+                    value="Active"
+                  />
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: "100%",
+                  flex: 0,
+                  marginTop: 1,
+                  marginBottom: 1,
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    marginLeft: 0,
+                    fontSize: 15,
+                    fontWeight: "bold",
                   }}
-                  status="success"
-                  textProps={{}}
-                  textStyle={{ color: "white" }}
-                  value="Active"
-                />
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                flex: 0,
-                marginTop: 1,
-                marginBottom: 1,
-                flexDirection: "row",
-              }}
-            >
-              <Text
+                >
+                  Member Since:{" "}
+                </Text>
+
+                <Text>
+                  {data == undefined
+                    ? "Loading..."
+                    : DateTime.fromISO(data.data.created_at).toLocaleString(
+                        DateTime.DATE_MED
+                      )}
+                </Text>
+              </View>
+              <View
                 style={{
-                  marginLeft: 0,
-                  fontSize: 15,
-                  fontWeight: "bold",
+                  width: "100%",
+                  flex: 0,
+                  marginTop: 1,
+                  marginBottom: 1,
+                  flexDirection: "row",
                 }}
               >
-                Member Since:{" "}
-              </Text>
+                <Text
+                  style={{
+                    marginLeft: 0,
+                    fontSize: 15,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Package:{" "}
+                </Text>
 
-              <Text>
-                {data == undefined
-                  ? "Loading..."
-                  : DateTime.fromISO(data.data.created_at).toLocaleString(
-                      DateTime.DATE_MED
-                    )}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                flex: 0,
-                marginTop: 1,
-                marginBottom: 1,
-                flexDirection: "row",
-              }}
-            >
-              <Text
+                <Text>{data == undefined ? "Loading..." : data.data.name}</Text>
+              </View>
+              <View
                 style={{
-                  marginLeft: 0,
-                  fontSize: 15,
-                  fontWeight: "bold",
+                  width: "100%",
+                  flex: 0,
+                  marginTop: 1,
+                  marginBottom: 1,
+                  flexDirection: "row",
                 }}
               >
-                Package:{" "}
-              </Text>
+                <Text
+                  style={{
+                    marginLeft: 0,
+                    fontSize: 15,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Points:{" "}
+                </Text>
 
-              <Text>{data == undefined ? "Loading..." : data.data.name}</Text>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                flex: 0,
-                marginTop: 1,
-                marginBottom: 1,
-                flexDirection: "row",
-              }}
-            >
-              <Text
-                style={{
-                  marginLeft: 0,
-                  fontSize: 15,
-                  fontWeight: "bold",
-                }}
-              >
-                Points:{" "}
-              </Text>
-
-              <Text>
-                {data == undefined ? "Loading..." : data.data.points} Fronteirs
-              </Text>
-            </View>
-          </Card>
-        </View>
-      </Card>
+                <Text>
+                  {data == undefined ? "Loading..." : data.data.points}{" "}
+                  Fronteirs
+                </Text>
+              </View>
+            </Card>
+          </View>
+        </Card>
+      )}
       <SpeedDial
         isOpen={OpenEdit}
         openIcon={{ name: "close", color: "#fff" }}
