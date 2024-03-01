@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Alert,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import {
@@ -464,10 +465,23 @@ export default function CustomerRedeem({ navigation }: any) {
                       title={"Redeem"}
                       buttonStyle={{ borderRadius: 10, marginTop: 20 }}
                       onPress={() => {
-                        setConfirmDialog({
-                          dialogState: true,
-                          redeem: redeem.RedeemID,
-                        });
+                        Alert.alert(
+                          "Redeem",
+                          "Are you sure you want to redeem this reward?",
+                          [
+                            {
+                              text: "CANCEL",
+                              onPress: () => {},
+                              style: "cancel",
+                            },
+                            {
+                              text: "CONFIRM",
+                              onPress: () => {
+                                createRedeemTransaction(redeem.RedeemID);
+                              },
+                            },
+                          ]
+                        );
                       }}
                       disabled={
                         points < redeem.point_cost ||
