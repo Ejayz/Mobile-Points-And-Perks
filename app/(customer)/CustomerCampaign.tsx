@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Alert,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import {
@@ -286,90 +287,110 @@ export default function CustomerCampaign({ navigation }: any) {
             {action == undefined
               ? null
               : action.DialogActionList.map((act, index) => {
-                return (
-                  <Card key={index} containerStyle={{}} wrapperStyle={{}}>
-                    <Card.FeaturedTitle
-                      style={{
-                        color: "black",
-                        fontSize: 15,
-                      }}
-                    >
-                      Action:{" "}
-                      <Text
+                  return (
+                    <Card key={index} containerStyle={{}} wrapperStyle={{}}>
+                      <Card.FeaturedTitle
                         style={{
                           color: "black",
-                          fontSize: 13,
+                          fontSize: 15,
                         }}
                       >
-                        {act.name}
-                      </Text>
-                    </Card.FeaturedTitle>
-                    <Card.FeaturedSubtitle
-                      style={{
-                        color: "black",
-                        fontSize: 14,
-                      }}
-                    >
-                      Description:{" "}
-                      <Text
+                        Action:{" "}
+                        <Text
+                          style={{
+                            color: "black",
+                            fontSize: 13,
+                          }}
+                        >
+                          {act.name}
+                        </Text>
+                      </Card.FeaturedTitle>
+                      <Card.FeaturedSubtitle
                         style={{
                           color: "black",
-                          fontSize: 13,
+                          fontSize: 14,
                         }}
                       >
-                        {act.description}
-                      </Text>
-                    </Card.FeaturedSubtitle>
-                    <Card.Title
-                      style={{
-                        fontSize: 12,
-                        textAlign: "left",
-                      }}
-                    >
-                      Reward:{" "}
-                      <Text
+                        Description:{" "}
+                        <Text
+                          style={{
+                            color: "black",
+                            fontSize: 13,
+                          }}
+                        >
+                          {act.description}
+                        </Text>
+                      </Card.FeaturedSubtitle>
+                      <Card.Title
                         style={{
-                          fontSize: 13,
+                          fontSize: 12,
+                          textAlign: "left",
                         }}
                       >
-                        {act.RewardName}
-                      </Text>
-                    </Card.Title>
+                        Reward:{" "}
+                        <Text
+                          style={{
+                            fontSize: 13,
+                          }}
+                        >
+                          {act.RewardName}
+                        </Text>
+                      </Card.Title>
 
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Text
+                      <View
                         style={{
-                          fontSize: 11,
+                          flex: 1,
+                          flexDirection: "column",
                         }}
                       >
-                        Reward Description
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 10,
-                        }}
-                      >
-                        {act.RewardName}
-                      </Text>
-                    </View>
-                  </Card>
-                );
-              })}
+                        <Text
+                          style={{
+                            fontSize: 11,
+                          }}
+                        >
+                          Reward Description
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                          }}
+                        >
+                          {act.RewardName}
+                        </Text>
+                      </View>
+                    </Card>
+                  );
+                })}
 
             <Dialog.Actions>
               <Dialog.Button
                 title="CREATE TRANSACTION"
                 disabled={action == undefined ? true : false}
-                onPress={() =>
-                  setConfirmDialog({
-                    dialogState: true,
-                    campaign_id: action == undefined ? 0 : action.campaign_id,
-                  })
+                onPress={
+                  () =>
+                    Alert.alert(
+                      "Confirm Transaction",
+                      "Are you sure you want to claim this campaign?",
+                      [
+                        {
+                          text: "Cancel",
+                          onPress: () => {},
+                          style: "cancel",
+                        },
+                        {
+                          text: "OK",
+                          onPress: () => {
+                            createCampaignTransaction(
+                              confirmDialog.campaign_id
+                            );
+                          },
+                        },
+                      ]
+                    )
+                  // setConfirmDialog({
+                  //   dialogState: true,
+                  //   campaign_id: action == undefined ? 0 : action.campaign_id,
+                  // })
                 }
               />
               <Dialog.Button
@@ -493,7 +514,6 @@ export default function CustomerCampaign({ navigation }: any) {
                 height={40}
               />
             </ScrollView>
-
           ) : data.data.length == 0 ? (
             <View
               style={{
@@ -515,8 +535,7 @@ export default function CustomerCampaign({ navigation }: any) {
               </Text>
             </View>
           ) : (
-            <ScrollView
-            >
+            <ScrollView>
               {data.data.map((campaign, index) => {
                 return (
                   <Card
