@@ -8,6 +8,8 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  Alert,
+  BackHandler,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import {
@@ -18,8 +20,10 @@ import {
   useCodeScanner,
 } from "react-native-vision-camera";
 import { useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function SuperAdminDashboard({ navigation }: any) {
-  const [showCamera, setShowCamera] = useState(true);
+  const [showCamera, setShowCamera] = useState(false);
   const [hasPermission, setCameraPermission] =
     useState<CameraPermissionStatus>("not-determined");
   const device = useCameraDevice("back");
@@ -64,24 +68,42 @@ export default function SuperAdminDashboard({ navigation }: any) {
       setIsActive(false);
     }
   }, [isFocused && appState === "active"]);
-
-  useEffect(() => {
-    const requestPermissions = async () => {
-      console.log("Requesting camera permission");
-      const permission = await Camera.requestCameraPermission();
-      console.log("Permission given: ", permission);
-      if (permission === "denied") {
-        Toast.show({
-          type: "error",
-          text1: "Permission Required",
-          text2:
-            "To use camera please give the application permission to use camera.",
-        });
-        navigation.navigate("login");
+  const requestPermissions = async () => {
+    console.log("Requesting camera permission");
+    const permission = await Camera.requestCameraPermission();
+    console.log("Permission given: ", permission);
+    if (permission === "denied") {
+      Toast.show({
+        type: "error",
+        text1: "Permission Required",
+        text2:
+          "To use camera please give the application permission to use camera.",
+      });
+      navigation.navigate("login");
+    } else {
+      const is_first_time = await AsyncStorage.getItem("alreadySetup");
+      if (is_first_time == null) {
+        setCameraPermission(permission);
+        setShowCamera(true);
+        Alert.alert(
+          "First Time Setup",
+          "For camera to work properly, please restart the application.",
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                AsyncStorage.setItem("alreadySetup", "true");
+                BackHandler.exitApp();
+              },
+              style: "cancel",
+            },
+          ],
+          { cancelable: false }
+        );
       }
-      setCameraPermission(permission);
-      setShowCamera(true);
-    };
+    }
+  };
+  useEffect(() => {
     requestPermissions();
   }, []);
 
