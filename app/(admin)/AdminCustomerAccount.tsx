@@ -9,7 +9,7 @@ import {
   ListItem,
   Tooltip,
 } from "@rneui/base";
-import { View, Text, TouchableHighlight, StatusBar } from "react-native";
+import { View, Text, TouchableHighlight, StatusBar, Alert } from "react-native";
 import { SpeedDial } from "@rneui/themed";
 import { DateTime } from "luxon";
 import { Form, Formik, FormikHelpers, FormikProps, FormikValues } from "formik";
@@ -85,20 +85,23 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
   }, []);
 
   const [showAddPoints, setShowAddPoints] = React.useState(false);
-  const calculatePoints = async (values: any) => {
+
+
+  const calculatePoints = (values: any) => {
     console.log(values);
     const { points, multiplier } = values;
     const convertedPoints = parseFloat(points);
     const calculatedAmount =
       convertedPoints * parseFloat(multiplier) + convertedPoints;
-    console.log(calculatedAmount);
     if (isNaN(calculatedAmount)) {
       AddPointsForm.current?.setFieldValue("total_points", "0");
+      return
     } else {
       AddPointsForm.current?.setFieldValue(
         "total_points",
-        calculatedAmount.toFixed(2).toString()
+        calculatedAmount.toFixed(2).toString() 
       );
+      return
     }
   };
 
@@ -273,73 +276,30 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 renderErrorMessage={
                   errors.points && touched.points ? true : false
                 }
-                errorMessage={`${
-                  errors.points && touched.points ? errors.points : ""
-                }`}
+                errorMessage={`${errors.points && touched.points ? errors.points : ""
+                  }`}
                 errorStyle={{ color: "red", fontSize: 15 }}
                 onTextInput={() => calculatePoints(values)}
-              />
-              <Input
-                style={{
-                  flex: 2,
-                  paddingVertical: 10,
-                  width: "60%",
-                  color: "black",
-                }}
-                labelStyle={{ color: "black", fontSize: 15 }}
-                label="Package Multiplier"
-                disabledInputStyle={{ backgroundColor: "#ddd" }}
-                placeholder="Points"
-                onChangeText={handleChange("multiplier")}
-                onBlur={handleBlur("multiplier")}
-                value={
-                  data == undefined ? "0" : data.data.multiplier.toString()
-                }
-                keyboardType="numeric"
-                placeholderTextColor={"black"}
-                renderErrorMessage={
-                  errors.multiplier && touched.multiplier ? true : false
-                }
-                errorMessage={`${
-                  errors.multiplier && touched.multiplier
-                    ? errors.multiplier
-                    : ""
-                }`}
-                errorStyle={{ color: "red", fontSize: 15 }}
-                readOnly={true}
-              />
-              <Input
-                style={{
-                  flex: 2,
-                  paddingVertical: 10,
-                  width: "60%",
-                  color: "black",
-                }}
-                labelStyle={{ color: "black", fontSize: 15 }}
-                label="Total Points"
-                disabledInputStyle={{ backgroundColor: "#ddd" }}
-                placeholder="Total Points"
-                onChangeText={handleChange("total_points")}
-                onBlur={handleBlur("total_points")}
-                value={values.total_points.toString()}
-                keyboardType="numeric"
-                autoCapitalize="none"
-                placeholderTextColor={"black"}
-                renderErrorMessage={
-                  errors.total_points && touched.total_points ? true : false
-                }
-                errorMessage={`${
-                  errors.total_points && touched.total_points
-                    ? errors.total_points
-                    : ""
-                }`}
-                errorStyle={{ color: "red", fontSize: 15 }}
               />
               <Dialog.Actions>
                 <Dialog.Button
                   title="Add"
                   onPress={(e: any) => {
-                    handleSubmit(e);
+                   Alert.alert("Add Points",`Points will be multiplied to ${ data == undefined ? "0" : data.data.multiplier.toString()}`,[
+                    {
+                      
+                        text: "Cancel",
+                        onPress: () => {},
+                        style: "cancel",
+                      
+                    },{
+                      text:"CONFIRM",
+                      onPress:()=>{
+                        handleChange(e)
+                      },
+                      style:"default"
+                    }
+                   ])
                   }}
                 />
                 <Dialog.Button
@@ -403,9 +363,8 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 renderErrorMessage={
                   errors.points && touched.points ? true : false
                 }
-                errorMessage={`${
-                  errors.points && touched.points ? errors.points : ""
-                }`}
+                errorMessage={`${errors.points && touched.points ? errors.points : ""
+                  }`}
                 errorStyle={{ color: "red", fontSize: 15 }}
               />
               <Dialog.Actions>
@@ -438,13 +397,12 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
             <Avatar
               size={96}
               rounded
-              title={`${
-                data == undefined
+              title={`${data == undefined
                   ? "L"
                   : `${data.data.first_name.charAt(
-                      0
-                    )}${data.data.last_name.charAt(0)}`
-              }`}
+                    0
+                  )}${data.data.last_name.charAt(0)}`
+                }`}
               containerStyle={{ backgroundColor: "purple" }}
               source={{ uri: "https://" }}
             />
@@ -606,8 +564,8 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                   {data == undefined
                     ? "Loading..."
                     : DateTime.fromISO(data.data.created_at).toLocaleString(
-                        DateTime.DATE_MED
-                      )}
+                      DateTime.DATE_MED
+                    )}
                 </Text>
               </View>
               <View
