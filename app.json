@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Mobile-Points-And-Perks",
+    "name": "Points and Perks",
     "slug": "Mobile-Points-And-Perks",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,15 +11,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera."
+        "NSCameraUsageDescription": "Points and Perks needs needs permission to access the camera."
       },
-      "bundleIdentifier": "com.mobilepointsandperks"
+      "bundleIdentifier": "com.pointsandperks"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,16 +25,13 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.mobilepointsandperks",
-      "permissions": [
-        "android.pernmission.CAMERA",
-        "android.permission.CAMERA"
-      ]
+      "permissions": ["android.pernmission.CAMERA", "android.permission.CAMERA"]
     },
     "plugins": [
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "cameraPermissionText": "Points and Perks needs needs permission to access the camera.",
           "enableCodeScanner": true
         }
       ]

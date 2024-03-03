@@ -1,4 +1,4 @@
-rootProject.name = 'Mobile-Points-And-Perks'
+rootProject.name = 'Points and Perks'
 
 dependencyResolutionManagement {
   versionCatalogs {

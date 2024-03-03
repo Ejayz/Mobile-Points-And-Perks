@@ -222,7 +222,26 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
           }}
           innerRef={AddPointsForm}
           onSubmit={async (values) => {
-            await addPoints(values);
+            Alert.alert(
+              "Add Points",
+              `A multiplier of ${values.multiplier} is applied. A total of ${
+                values.points * parseFloat(values.multiplier) + values.points
+              } Frontier will be added to the customer's account. Proceed?`,
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+                {
+                  text: "CONFIRM",
+                  onPress: async () => {
+                    await addPoints(values);
+                  },
+                  style: "default",
+                },
+              ]
+            );
           }}
           validationSchema={AddFormValidation}
         >
@@ -265,29 +284,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 <Dialog.Button
                   title="Add"
                   onPress={(e: any) => {
-                    Alert.alert(
-                      "Add Points",
-                      `A multiplier of ${
-                        values.multiplier
-                      } is applied. A total of ${
-                        values.points * parseFloat(values.multiplier) +
-                        values.points
-                      } Frontier will be added to the customer's account. Proceed?`,
-                      [
-                        {
-                          text: "Cancel",
-                          onPress: () => {},
-                          style: "cancel",
-                        },
-                        {
-                          text: "CONFIRM",
-                          onPress: () => {
-                            handleChange(e);
-                          },
-                          style: "default",
-                        },
-                      ]
-                    );
+                    handleSubmit(e);
                   }}
                 />
                 <Dialog.Button
@@ -317,7 +314,24 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
           }}
           innerRef={UpdatePointsForm}
           onSubmit={async (values: any) => {
-            const data = await updatePoints(values);
+            Alert.alert(
+              "Update Points",
+              `The customer's points will be updated to ${values.points} Frontier. Proceed?`,
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+                {
+                  text: "CONFIRM",
+                  onPress: async () => {
+                    await updatePoints(values);
+                  },
+                  style: "default",
+                },
+              ]
+            );
           }}
           validationSchema={UpdateFormValidation}
         >
@@ -359,9 +373,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
               <Dialog.Actions>
                 <Dialog.Button
                   title="Update"
-                  onPress={(e: any) => {
-                    handleSubmit(e);
-                  }}
+                  onPress={(e: any) => handleSubmit(e)}
                 />
                 <Dialog.Button
                   title="Cancel"
