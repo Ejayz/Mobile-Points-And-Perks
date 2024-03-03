@@ -86,30 +86,10 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
 
   const [showAddPoints, setShowAddPoints] = React.useState(false);
 
-
-  const calculatePoints = (values: any) => {
-    console.log(values);
-    const { points, multiplier } = values;
-    const convertedPoints = parseFloat(points);
-    const calculatedAmount =
-      convertedPoints * parseFloat(multiplier) + convertedPoints;
-    if (isNaN(calculatedAmount)) {
-      AddPointsForm.current?.setFieldValue("total_points", "0");
-      return
-    } else {
-      AddPointsForm.current?.setFieldValue(
-        "total_points",
-        calculatedAmount.toFixed(2).toString() 
-      );
-      return
-    }
-  };
-
   const AddFormValidation = Yup.object({
     points: Yup.number()
       .required("Points is a required Field")
       .typeError("Points must be a number"),
-    total_points: Yup.number().required().typeError("Points must be a number"),
     multiplier: Yup.number().required().typeError("Points must be a number"),
   });
   const UpdateFormValidation = Yup.object({
@@ -276,30 +256,38 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 renderErrorMessage={
                   errors.points && touched.points ? true : false
                 }
-                errorMessage={`${errors.points && touched.points ? errors.points : ""
-                  }`}
+                errorMessage={`${
+                  errors.points && touched.points ? errors.points : ""
+                }`}
                 errorStyle={{ color: "red", fontSize: 15 }}
-                onTextInput={() => calculatePoints(values)}
               />
               <Dialog.Actions>
                 <Dialog.Button
                   title="Add"
                   onPress={(e: any) => {
-                   Alert.alert("Add Points",`Points will be multiplied to ${ data == undefined ? "0" : data.data.multiplier.toString()}`,[
-                    {
-                      
-                        text: "Cancel",
-                        onPress: () => {},
-                        style: "cancel",
-                      
-                    },{
-                      text:"CONFIRM",
-                      onPress:()=>{
-                        handleChange(e)
-                      },
-                      style:"default"
-                    }
-                   ])
+                    Alert.alert(
+                      "Add Points",
+                      `A multiplier of ${
+                        values.multiplier
+                      } is applied. A total of ${
+                        values.points * parseFloat(values.multiplier) +
+                        values.points
+                      } Frontier will be added to the customer's account. Proceed?`,
+                      [
+                        {
+                          text: "Cancel",
+                          onPress: () => {},
+                          style: "cancel",
+                        },
+                        {
+                          text: "CONFIRM",
+                          onPress: () => {
+                            handleChange(e);
+                          },
+                          style: "default",
+                        },
+                      ]
+                    );
                   }}
                 />
                 <Dialog.Button
@@ -363,8 +351,9 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 renderErrorMessage={
                   errors.points && touched.points ? true : false
                 }
-                errorMessage={`${errors.points && touched.points ? errors.points : ""
-                  }`}
+                errorMessage={`${
+                  errors.points && touched.points ? errors.points : ""
+                }`}
                 errorStyle={{ color: "red", fontSize: 15 }}
               />
               <Dialog.Actions>
@@ -397,12 +386,13 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
             <Avatar
               size={96}
               rounded
-              title={`${data == undefined
+              title={`${
+                data == undefined
                   ? "L"
                   : `${data.data.first_name.charAt(
-                    0
-                  )}${data.data.last_name.charAt(0)}`
-                }`}
+                      0
+                    )}${data.data.last_name.charAt(0)}`
+              }`}
               containerStyle={{ backgroundColor: "purple" }}
               source={{ uri: "https://" }}
             />
@@ -564,8 +554,8 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                   {data == undefined
                     ? "Loading..."
                     : DateTime.fromISO(data.data.created_at).toLocaleString(
-                      DateTime.DATE_MED
-                    )}
+                        DateTime.DATE_MED
+                      )}
                 </Text>
               </View>
               <View

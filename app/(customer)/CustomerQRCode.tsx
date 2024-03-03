@@ -124,34 +124,37 @@ export default function CustomerQRCode({ navigation }: any) {
               alignItems: "center",
             }}
           >
-            <QRCode
-              value={`{"user_id":${data.data[0].user_id}}`}
-              backgroundColor="yellow"
-              logoBackgroundColor="transparent"
-              size={250}
-              quietZone={15}
-            />
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-              }}
-            >
-              {data.data[0].first_name} {data.data[0].middle_name}{" "}
-              {data.data[0].last_name} {data.data[0].suffix}
-            </Text>
-            <Badge
-              value={data.data[0].name}
-              textStyle={{
-                fontSize: 20,
-                fontWeight: "bold",
-              }}
-              badgeStyle={{
-                width: "auto",
-                height: "auto",
-                borderColor: "black",
-              }}
-            />
+            {data == undefined ? null : (
+              <>
+                <QRCode
+                  value={data.data[0].customer_id}
+                  size={200}
+                  color={"black"}
+                  backgroundColor={"white"}
+                />
+                <Text
+                  style={{
+                    fontSize: 22,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {data.data[0].first_name} {data.data[0].middle_name}{" "}
+                  {data.data[0].last_name} {data.data[0].suffix}
+                </Text>
+                <Badge
+                  value={data.data[0].name}
+                  textStyle={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                  }}
+                  badgeStyle={{
+                    width: "auto",
+                    height: "auto",
+                    borderColor: "black",
+                  }}
+                />
+              </>
+            )}
           </View>
         )}
       </>
