@@ -451,7 +451,7 @@ export default function CustomerRedeem({ navigation }: any) {
                         Description: {redeem.RedeemDescription}
                       </Text>
                       <Text style={{}}>
-                        {points} of {redeem.point_cost} Fronter Points
+                        {points} of {redeem.point_cost} Frontier Points
                       </Text>
 
                       <LinearProgress

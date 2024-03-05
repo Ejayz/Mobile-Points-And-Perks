@@ -31,31 +31,51 @@ export default function SuperAdminDashboard({ navigation }: any) {
   const codeScanner = useCodeScanner({
     codeTypes: ["qr"],
     onCodeScanned: (codes) => {
-      if (typeof codes[0].value != "string") {
-        return false;
-      }
-      if (!codes[0].value.includes('"user_id":')) {
+      try {
+        if (typeof codes[0].value != "string") {
+          return false;
+        }
+        if (!codes[0].value.includes('"user_id":')) {
+          Toast.show({
+            type: "error",
+            position: "top",
+            text1: "Invalid QR Code",
+            text2: "Scanned QR Code is not compatibe. Please try again!",
+          });
+          return false;
+        }
+        if (codes[0].value == undefined) {
+          return false;
+        }
+
+        if (codes[0].value == null) {
+          return false;
+        }
+        if (codes[0].value == "") {
+          return false;
+        }
+        console.log(codes[0].value);
+        const qr_data = JSON.parse(codes[0].value);
+        navigation.reset({
+          index: 1,
+          routes: [
+            {
+              name: "AdminCustomerAccount",
+              params: {
+                user_id: qr_data.user_id,
+              },
+            },
+          ],
+        });
+      } catch (e) {
+        console.log(e);
         Toast.show({
           type: "error",
           position: "top",
-          text1: "Invalid QR Code",
-          text2: "Scanned QR Code is not compatibe. Please try again!",
+          text1: "Error Occured",
+          text2: "Something went wrong. Please try again!",
         });
-        return false;
       }
-      if (codes[0].value == undefined) {
-        return false;
-      }
-
-      if (codes[0].value == null) {
-        return false;
-      }
-      if (codes[0].value == "") {
-        return false;
-      }
-      console.log(codes[0].value);
-      const qr_data = JSON.parse(codes[0].value);
-      navigation.navigate("AdminCustomerAccount", { user_id: qr_data.user_id });
     },
   });
 

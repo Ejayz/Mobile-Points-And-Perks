@@ -137,7 +137,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 fontWeight: "bold",
               }}
             >
-              Email:
+              Email:{" "}
             </Text>
             <Text>
               {data == undefined ? "Loading" : `${data.data[0].email}`}
@@ -160,7 +160,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
                 fontWeight: "bold",
               }}
             >
-              Address:
+              Address:{" "}
             </Text>
             <Text
               style={{

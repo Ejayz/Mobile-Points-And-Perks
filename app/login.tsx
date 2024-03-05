@@ -19,81 +19,90 @@ const Login = ({ navigation }: any) => {
   const [isRequesting, setIsRequesting] = useState(false);
   const forms = useRef<FormikProps<any>>(null);
   const loginHandler = async (values: any, navigate: any) => {
-    setIsRequesting(true);
+    try {
+      setIsRequesting(true);
 
-    let headersList = {
-      Accept: "*/*",
-      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
 
-      "Content-Type": "application/json",
-    };
-    let bodyContent = JSON.stringify({
-      email: values.email,
-      password: values.password,
-    });
-    let response = await fetch(
-      "https://pointsandperks.ca/api/private/authentication/login",
-      {
-        method: "POST",
-        body: bodyContent,
-        headers: headersList,
-      }
-    );
-
-    if (response.status == 502) {
-      throw new Error("Cannot Connect to Server . Please try again.");
-    } else {
-      let data = await response.json();
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        email: values.email,
+        password: values.password,
+      });
+      let response = await fetch(
+        "https://pointsandperks.ca/api/private/authentication/login",
+        {
+          method: "POST",
+          body: bodyContent,
+          headers: headersList,
+        }
+      );
 
       if (response.status == 502) {
-        setIsRequesting(false);
-        Toast.show({
-          type: "error",
-          text1: "Connection Error",
-          text2:
-            "Cannot connect to server . Please contact server administrator.",
-        });
-      }
-      setIsRequesting(false);
-      if (data.code == 200 && data.token) {
-        const token = data.token;
-        if (token.role == 1) {
-          Toast.show({
-            type: "error",
-            position: "top",
-            text1: "Privillage Required",
-            text2: "You do not have the privilege to access this page.",
-          });
-        } else if (token.role == 2) {
-          navigation.navigate("AdminDashboard");
-          forms.current?.resetForm();
-        } else if (token.role == 3) {
-          Toast.show({
-            type: "error",
-            position: "top",
-            text1: "Privillage Required",
-            text2: "You do not have the privilege to access this page.",
-          });
-        } else if (token.role == 4) {
-          navigation.navigate("CustomerDrawerNavigator");
-          forms.current?.resetForm();
-        }
+        throw new Error("Cannot Connect to Server . Please try again.");
       } else {
+        let data = await response.json();
+
+        if (response.status == 502) {
+          setIsRequesting(false);
+          Toast.show({
+            type: "error",
+            text1: "Connection Error",
+            text2:
+              "Cannot connect to server . Please contact server administrator.",
+          });
+        }
         setIsRequesting(false);
-        Toast.show({
-          type: "error",
-          position: "top",
-          text1: "Login Error",
-          text2: data.message,
-        });
+        if (data.code == 200 && data.token) {
+          const token = data.token;
+          if (token.role == 1) {
+            Toast.show({
+              type: "error",
+              position: "top",
+              text1: "Privillage Required",
+              text2: "You do not have the privilege to access this page.",
+            });
+          } else if (token.role == 2) {
+            navigation.navigate("AdminDashboard");
+            forms.current?.resetForm();
+          } else if (token.role == 3) {
+            Toast.show({
+              type: "error",
+              position: "top",
+              text1: "Privillage Required",
+              text2: "You do not have the privilege to access this page.",
+            });
+          } else if (token.role == 4) {
+            navigation.navigate("CustomerDrawerNavigator");
+            forms.current?.resetForm();
+          }
+        } else {
+          setIsRequesting(false);
+          Toast.show({
+            type: "error",
+            position: "top",
+            text1: "Login Error",
+            text2: data.message,
+          });
+        }
       }
+    } catch (error: any) {
+      setIsRequesting(false);
+      Toast.show({
+        type: "error",
+        position: "top",
+        text1: "Error Occured",
+        text2: "Something went wrong. Please try again!",
+      });
     }
   };
 
   useEffect(() => {
     const requestPermissions = async () => {
       const permission = await Camera.requestCameraPermission();
-      console.log("Permission given: ", permission);
       if (permission === "denied") {
         Toast.show({
           type: "error",

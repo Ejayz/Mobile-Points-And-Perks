@@ -39,19 +39,15 @@ interface UserData {
 }
 
 export default function AdminCustomerAccount({ route, navigation }: any) {
+  console.log(route);
   const [OpenEdit, setOpenEdit] = React.useState(false);
-  const { user_id } = route.params;
+  const user_id = route.params.user_id;
   const [data, setData] = React.useState<UserData>();
-  const [loading, setLoading] = React.useState(true);
   const AddPointsForm = React.useRef<FormikProps<any>>(null);
-  const [AddFormDefault, setAddFormDefault] = React.useState({
-    points: "0",
-    multiplier: data == undefined ? "0" : data.data.multiplier,
-    total_points: 0,
-  });
   const UpdatePointsForm = React.useRef<FormikProps<any>>(null);
   const [showUpdatePoints, setShowUpdatePoints] = React.useState(false);
-
+  const [showAddPoints, setShowAddPoints] = React.useState(false);
+  const [totalPoints, setTotalPoints] = React.useState(0);
   const fetchData = async () => {
     let headersList = {
       Accept: "*/*",
@@ -66,7 +62,6 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
         headers: headersList,
       }
     );
-    console.log(response);
     if (response.status == 502) {
       Toast.show({
         type: "error",
@@ -80,11 +75,10 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       console.log(data);
     }
   };
+
   React.useEffect(() => {
     fetchData();
   }, []);
-
-  const [showAddPoints, setShowAddPoints] = React.useState(false);
 
   const AddFormValidation = Yup.object({
     points: Yup.number()
@@ -92,6 +86,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       .typeError("Points must be a number"),
     multiplier: Yup.number().required().typeError("Points must be a number"),
   });
+
   const UpdateFormValidation = Yup.object({
     points: Yup.number()
       .required("Points is a required Field")
@@ -121,24 +116,33 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       }
     );
 
-    let data = await response.json();
-    if (data.code == 200) {
-      await fetchData();
-      setShowAddPoints(!showAddPoints);
-
-      Toast.show({
-        type: "success",
-        text1: "Add Success",
-        text2: data.message,
-      });
-
-      AddPointsForm.current?.resetForm();
-    } else {
+    if (response.status == 502) {
       Toast.show({
         type: "error",
-        text1: "Add Error",
-        text2: data.message,
+        text1: "Connection Error",
+        text2:
+          "Cannot connect to server . Please contact server administrator.",
       });
+    } else {
+      let data = await response.json();
+      if (data.code == 200) {
+        await fetchData();
+        setShowAddPoints(!showAddPoints);
+
+        Toast.show({
+          type: "success",
+          text1: "Add Success",
+          text2: data.message,
+        });
+
+        AddPointsForm.current?.resetForm();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Add Error",
+          text2: data.message,
+        });
+      }
     }
   };
 
@@ -192,9 +196,22 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       }
     }
   };
-const getTotalPoints= (points:any,multiplier:any)=>{
-  return parseFloat(points) * parseFloat(multiplier) + parseFloat(points)
-}
+  const getTotalPoints = (points: any, multiplier: any) => {
+    try {
+      setTotalPoints(
+        parseFloat(points) * parseFloat(multiplier) + parseFloat(points)
+      );
+    } catch (e) {
+      Toast.show({
+        type: "error",
+        text1: "Something went wrong!",
+        text2:
+          "Something went wrong calculating the total points. Please try again.",
+      });
+      return 0;
+    }
+  };
+
   return (
     <>
       <StatusBar
@@ -227,7 +244,12 @@ const getTotalPoints= (points:any,multiplier:any)=>{
             Alert.alert(
               "Add Points",
               `A multiplier of ${values.multiplier} is applied. A total of ${
-                getTotalPoints(values.points,values.multiplier)
+                values.points == "" ||
+                values.points == undefined ||
+                values.multiplier == "" ||
+                values.multiplier == undefined
+                  ? ""
+                  : totalPoints
               } Frontier will be added to the customer's account. Proceed?`,
               [
                 {
@@ -286,6 +308,7 @@ const getTotalPoints= (points:any,multiplier:any)=>{
                 <Dialog.Button
                   title="Add"
                   onPress={(e: any) => {
+                    getTotalPoints(values.points, values.multiplier);
                     handleSubmit(e);
                   }}
                 />
@@ -463,7 +486,7 @@ const getTotalPoints= (points:any,multiplier:any)=>{
                   fontWeight: "bold",
                 }}
               >
-                Email:
+                Email:{" "}
               </Text>
               <Text>
                 {data == undefined ? "Loading" : `${data.data.email}`}
@@ -486,7 +509,7 @@ const getTotalPoints= (points:any,multiplier:any)=>{
                   fontWeight: "bold",
                 }}
               >
-                Address:
+                Address:{" "}
               </Text>
               <Text
                 style={{
@@ -534,12 +557,7 @@ const getTotalPoints= (points:any,multiplier:any)=>{
                       marginTop: "auto",
                       marginBottom: "auto",
                     }}
-                    containerStyle={{}}
-                    onPress={() => {
-                      alert("onPress");
-                    }}
                     status="success"
-                    textProps={{}}
                     textStyle={{ color: "white" }}
                     value="Active"
                   />
@@ -630,7 +648,6 @@ const getTotalPoints= (points:any,multiplier:any)=>{
             data == undefined ? 0 : data.data.multiplier
           );
         }}
-        onClose={() => console.log("onClose()")}
         onPressIn={() => setOpenEdit(!OpenEdit)}
         transitionDuration={150}
         icon={{ name: "menu", color: "#fff" }}
