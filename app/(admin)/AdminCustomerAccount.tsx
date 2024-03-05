@@ -192,7 +192,9 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
       }
     }
   };
-
+const getTotalPoints= (points:any,multiplier:any)=>{
+  return parseFloat(points) * parseFloat(multiplier) + parseFloat(points)
+}
   return (
     <>
       <StatusBar
@@ -225,7 +227,7 @@ export default function AdminCustomerAccount({ route, navigation }: any) {
             Alert.alert(
               "Add Points",
               `A multiplier of ${values.multiplier} is applied. A total of ${
-                values.points * parseFloat(values.multiplier) + values.points
+                getTotalPoints(values.points,values.multiplier)
               } Frontier will be added to the customer's account. Proceed?`,
               [
                 {

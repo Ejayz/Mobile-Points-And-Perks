@@ -127,10 +127,11 @@ export default function CustomerQRCode({ navigation }: any) {
             {data == undefined ? null : (
               <>
                 <QRCode
-                  value={data.data[0].customer_id}
+                  value={`{"user_id": ${data.data[0].CustomerID}}`}
                   size={200}
                   color={"black"}
-                  backgroundColor={"white"}
+                  backgroundColor={"yellow"}
+                  quietZone={20}
                 />
                 <Text
                   style={{
